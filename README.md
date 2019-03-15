@@ -1,2 +1,1 @@
-# amuse-push
-push notification
+AmusePush
