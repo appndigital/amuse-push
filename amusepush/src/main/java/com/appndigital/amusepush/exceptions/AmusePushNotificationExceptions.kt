@@ -1,4 +1,4 @@
-package com.appndigital.pushnotification.exceptions
+package com.appndigital.amusepush.exceptions
 
 class DeviceUnsupportedException : Exception()
 

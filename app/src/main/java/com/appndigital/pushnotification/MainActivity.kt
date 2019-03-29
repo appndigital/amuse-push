@@ -5,12 +5,12 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import com.appndigital.pushnotification.api.AmusePushNotificationApiService
-import com.appndigital.pushnotification.api.AmusePushNotificationApiServiceImpl
-import com.appndigital.pushnotification.exceptions.DeviceUnsupportedException
-import com.appndigital.pushnotification.exceptions.GooglePlayServicesNotInstalledException
-import com.appndigital.pushnotification.exceptions.GooglePlayServicesOutDatedException
-import com.appndigital.pushnotification.helper.GooglePlayHelper
+import com.appndigital.amusepush.api.AmusePushNotificationApiService
+import com.appndigital.amusepush.api.AmusePushNotificationApiServiceImpl
+import com.appndigital.amusepush.exceptions.DeviceUnsupportedException
+import com.appndigital.amusepush.exceptions.GooglePlayServicesNotInstalledException
+import com.appndigital.amusepush.exceptions.GooglePlayServicesOutDatedException
+import com.appndigital.amusepush.helper.GooglePlayHelper
 import com.appndigital.pushnotification.registernotification.AmusePushNotificationService
 import com.appndigital.pushnotification.registernotification.AmusePushNotificationServiceImpl
 import com.google.android.gms.common.GoogleApiAvailability
@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    private val amusePushNotificationApiService: AmusePushNotificationApiService = AmusePushNotificationApiServiceImpl()
+    private lateinit var amusePushNotificationApiService: AmusePushNotificationApiService
     private val amusePushNotificationService: AmusePushNotificationService = AmusePushNotificationServiceImpl()
     var disposable: Disposable? = null
 
@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         FirebaseApp.initializeApp(this)
+        amusePushNotificationApiService = AmusePushNotificationApiServiceImpl(this)
 
         button.setOnClickListener {
             progressBar.visibility = View.VISIBLE
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMapCompletable { token ->
-                    amusePushNotificationApiService.sendTokenNotificationForUser(token, "217")
+                    amusePushNotificationApiService.registerUserWithToken(token, "217")
                 }
                 .subscribeBy(
                     onComplete = {
@@ -53,7 +54,11 @@ class MainActivity : AppCompatActivity() {
 
                         when (exception) {
                             DeviceUnsupportedException() -> {
-                                Toast.makeText(this, "votre portable ne supporte pas Google service", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this,
+                                    "votre portable ne supporte pas Google service",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
 
                             GooglePlayServicesOutDatedException(), GooglePlayServicesNotInstalledException() -> {

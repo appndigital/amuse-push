@@ -3,7 +3,7 @@
  * All Rights Reserved
  */
 
-package com.appndigital.pushnotification.helper
+package com.appndigital.amusepush.helper
 
 import okhttp3.MediaType
 import okhttp3.RequestBody

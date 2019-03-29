@@ -1,5 +1,6 @@
-package com.appndigital.pushnotification
+package com.appndigital.amusepush
 
+import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -9,17 +10,19 @@ import android.media.RingtoneManager
 import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.util.Log
-import com.appndigital.pushnotification.api.AmusePushNotificationApiService
-import com.appndigital.pushnotification.api.AmusePushNotificationApiServiceImpl
+import com.appndigital.amusepush.api.AmusePushNotificationApiService
+import com.appndigital.amusepush.api.AmusePushNotificationApiServiceImpl
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 
-class AmusePushMessagingService : FirebaseMessagingService() {
+abstract class AmusePushMessagingService : FirebaseMessagingService() {
 
-    private val amusePushNotificationApiService: AmusePushNotificationApiService = AmusePushNotificationApiServiceImpl()
+    private lateinit var amusePushNotificationApiService: AmusePushNotificationApiService
     var disposable: Disposable? = null
+    protected abstract val activityTolaunch: Class<*>
+
 
     override fun onMessageReceived(remoteMessage: RemoteMessage?) {
         Log.d("AmusePushMessaging", "onMessageReceived From ${remoteMessage?.from}")
@@ -37,8 +40,12 @@ class AmusePushMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String?) {
         //stocker l'id de l'utilisateur dans les shared et le mettre ici avec un flatmap
+        if (!::amusePushNotificationApiService.isInitialized) {
+            amusePushNotificationApiService = AmusePushNotificationApiServiceImpl(context = this)
+        }
+
         token?.let {
-            disposable = amusePushNotificationApiService.sendTokenNotificationForUser(token, "217")
+            disposable = amusePushNotificationApiService.registerUserWithToken(token, "217")
                 .subscribeBy(
                     onComplete = {
                         Log.d("AmusePushMessaging", "on New token success save on server")
@@ -73,8 +80,7 @@ class AmusePushMessagingService : FirebaseMessagingService() {
             }
         }
 
-
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, Activity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,
@@ -84,7 +90,6 @@ class AmusePushMessagingService : FirebaseMessagingService() {
         val channelId = getString(R.string.default_notification_channel_id)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.pick_up)
             .setContentTitle(getString(R.string.title))
             .setContentText(messageBody)
             .setAutoCancel(true)

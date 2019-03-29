@@ -1,10 +1,10 @@
-package com.appndigital.pushnotification.helper
+package com.appndigital.amusepush.helper
 
 import android.content.Context
-import com.appndigital.pushnotification.exceptions.DeviceUnsupportedException
-import com.appndigital.pushnotification.exceptions.GooglePlayServicesNotInstalledException
-import com.appndigital.pushnotification.exceptions.GooglePlayServicesOutDatedException
-import com.appndigital.pushnotification.exceptions.UnknownErrorException
+import com.appndigital.amusepush.exceptions.DeviceUnsupportedException
+import com.appndigital.amusepush.exceptions.GooglePlayServicesNotInstalledException
+import com.appndigital.amusepush.exceptions.GooglePlayServicesOutDatedException
+import com.appndigital.amusepush.exceptions.UnknownErrorException
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import io.reactivex.Completable

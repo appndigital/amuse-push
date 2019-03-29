@@ -3,10 +3,11 @@
  * All Rights Reserved
  */
 
-package com.appndigital.pushnotification.helper
+package com.appndigital.amusepush.helper
 
-import com.appndigital.pushnotification.BuildConfig
-import com.appndigital.pushnotification.Constants
+import android.content.Context
+import com.appndigital.amusepush.BuildConfig
+import com.appndigital.amusepush.R
 
 enum class EnvironmentType {
     DEV,
@@ -17,10 +18,10 @@ class VariantHelper {
 
     companion object {
 
-        fun getBackendEndPoint(): String {
+        fun getBackendEndPoint(context: Context): String {
             return when (getEnvironmentType()) {
-                EnvironmentType.DEV -> Constants.DEV_URL
-                EnvironmentType.PROD -> Constants.PROD_URL
+                EnvironmentType.DEV -> context.resources.getString(R.string.dev_url)
+                EnvironmentType.PROD -> context.resources.getString(R.string.prod_url)
             }
         }
 
