@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- url of amusepush-->
     <item name="dev_url" format="string" type="string">https://amusepush.appndesk.com/app/</item>
     <item name="prod_url" format="string" type="string">https://amusepush.appndesk.com/app/</item>
-    <item name="app_tag" format="string" type="string">
-        e655f06d04682ee8f8a634347727a0d8ea21ca2db6ebd2c6003534e5081a0913
-    </item>
+    <!-- tag of app -->
+    <item name="app_tag" format="string" type="string">e655f06d04682ee8f8a634347727a0d8ea21ca2db6ebd2c6003534e5081a0913</item>
+    <!-- num of app -->
     <item name="num_app" format="integer" type="integer">29</item>
+    <!-- android = 1 & ios =  0 -->
     <item name="os" format="integer" type="integer">1</item>
-    <item name="id_tel" format="string" type="string">123466554454515454</item>
 </resources>
