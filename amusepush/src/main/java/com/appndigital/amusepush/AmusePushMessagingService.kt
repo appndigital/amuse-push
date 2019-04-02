@@ -1,6 +1,5 @@
 package com.appndigital.amusepush
 
-import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -17,12 +16,10 @@ import com.google.firebase.messaging.RemoteMessage
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 
-abstract class AmusePushMessagingService : FirebaseMessagingService() {
+class AmusePushMessagingService : FirebaseMessagingService() {
 
     private lateinit var amusePushNotificationApiService: AmusePushNotificationApiService
     var disposable: Disposable? = null
-    protected abstract val activityTolaunch: Class<*>
-
 
     override fun onMessageReceived(remoteMessage: RemoteMessage?) {
         Log.d("AmusePushMessaging", "onMessageReceived From ${remoteMessage?.from}")
@@ -89,7 +86,7 @@ abstract class AmusePushMessagingService : FirebaseMessagingService() {
             }
         }
 
-        val intent = Intent(this, Activity::class.java)
+        val intent = Intent(this, (application as AmusePushApp).activityTolaunchForNotification)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(
             this, 0 /* Request code */, intent,
