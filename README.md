@@ -32,11 +32,14 @@ Now you can write this line
 ```gradle
 implementation 'com.github.appndigital:amuse-push:1.0.3'
 ```
-first you to need to extend your Application class to AmusePushApp class (OPTIONAL)
+first you to need to extend your Application class to AmusePushApp class and init the var activityTolaunchForNotification
 
 ```kotlin
 class MyApp : AmusePusApp() {
-...
+ override fun onCreate() {
+        super.onCreate()
+        activityTolaunchForNotification = MainActivity::class.java
+    }
 }
 ```
 add in you manifest 
@@ -47,27 +50,11 @@ android:name="com.mypackage.MyApp"
 ...
 </application>
 ```
-or if you have not Custom Application class
 
-```xml
-<application
-android:name="com.appndigital.amusepush.AmusePushApp"
-...
-</application>
-```
-you need to create a Service extend AmusePushMessagingService like this
-
-```kotlin
-class NotificationMessageService : AmusePushMessagingService() {
-
-    override val activityTolaunch: Class<*> = HomeActivity::class.java
-}
-```
-
-don't forget add this in your manifest :
+Add this in your manifest for Receive PUSH NOTIFICATION ! :
 ```xml
 ...
- <service android:name=".mypackage.NotificationMessageService">
+ <service android:name="com.appndigital.amusepush.AmusePushMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
