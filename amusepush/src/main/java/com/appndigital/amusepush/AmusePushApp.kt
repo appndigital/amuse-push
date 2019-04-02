@@ -20,7 +20,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 
-class AmusePushApp : Application() {
+open class AmusePushApp : Application() {
 
     val TAG = "AmusePushApp"
 
