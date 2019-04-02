@@ -163,7 +163,8 @@ class AmusePushNotificationApiServiceImpl(private val context: Context) : AmuseP
     private fun getIdUser(): String {
         val idUser = prefs.getString(Constants.USER_ID_PREFERENCES_KEY, "")
         if (idUser.isEmpty()) {
-            throw Exception("you need Save id user in pref see function in AmusePushApp saveUserId()")
+            return ""
+            //throw Exception("you need Save id user in pref see function in AmusePushApp saveUserId()")
         } else {
             return idUser
         }
