@@ -45,15 +45,24 @@ abstract class AmusePushMessagingService : FirebaseMessagingService() {
         }
 
         token?.let {
-            disposable = amusePushNotificationApiService.registerUserWithToken(token, "217")
-                .subscribeBy(
-                    onComplete = {
-                        Log.d("AmusePushMessaging", "on New token success save on server")
-                    },
-                    onError = {
-                        Log.e("AmusePushMessaging", "Error on token = ${it.localizedMessage}")
-                    }
-                )
+            val prefs = this.getSharedPreferences(Constants.USER_PREFERENCES_KEY, Context.MODE_PRIVATE)
+            val savedToken = prefs.getString(Constants.FCM_TOKEN_PREFERENCES_KEY, "")
+
+            if (savedToken != token) {
+                prefs.edit()
+                    .putString(Constants.FCM_TOKEN_PREFERENCES_KEY, token)
+                    .apply()
+                disposable = amusePushNotificationApiService.sendFcmTokenToServer()
+                    .subscribeBy(
+                        onComplete = {
+                            Log.d("AmusePushMessaging", "on New token success save on server")
+                        },
+                        onError = {
+                            Log.e("AmusePushMessaging", "Error on token = ${it.localizedMessage}")
+                        }
+                    )
+            }
+
         }
 
     }

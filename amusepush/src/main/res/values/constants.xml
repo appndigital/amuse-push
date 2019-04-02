@@ -8,5 +8,4 @@
     </item>
     <item name="num_app" format="integer" type="integer">29</item>
     <item name="os" format="integer" type="integer">1</item>
-    <item name="id_tel" format="string" type="string">123466554454515454</item>
 </resources>

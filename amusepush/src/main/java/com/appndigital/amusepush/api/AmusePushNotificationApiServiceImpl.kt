@@ -22,48 +22,47 @@ import retrofit2.converter.gson.GsonConverterFactory
 class AmusePushNotificationApiServiceImpl(private val context: Context) : AmusePushNotificationApiService {
 
     private val retrofitAmusePushNotificationApi: AmusePushNotificationApi = buildRetrofitAmusePushApi()
-    val ID_TEL = context.getString(R.string.id_tel)
+    val prefs = context.getSharedPreferences(Constants.USER_PREFERENCES_KEY, Context.MODE_PRIVATE)
     val APP_TAG = context.getString(R.string.app_tag)
     val NUM_APP = context.resources.getInteger(R.integer.num_app)
     val OS = context.resources.getInteger(R.integer.os)
 
-    override fun registerUserWithToken(userTokenNotification: String, idUser: String): Completable =
-        Completable.create { emitter ->
-            retrofitAmusePushNotificationApi.getUserTokenApp(APP_TAG)
-                .flatMap { response ->
-                    Log.d("AmusePushNotification", "onSuccess = $response")
+    override fun sendFcmTokenToServer(): Completable = Completable.create { emitter ->
+        retrofitAmusePushNotificationApi.getUserTokenApp(APP_TAG)
+            .flatMap { response ->
+                Log.d("AmusePushNotification", "onSuccess = $response")
+                if (response.isSuccessful) {
+                    saveTokenWebbApp(response.body()!!)
+                    retrofitAmusePushNotificationApi.registerUserWithToken(
+                        response.body()!!,
+                        getAdvertisingId().toRequestBody(),
+                        NUM_APP.toRequestBody(),
+                        OS.toRequestBody(),
+                        getFcmToken().toRequestBody(),
+                        getIdUser().toRequestBody()
+                    )
+                } else {
+                    throw GetTagFromApiException()
+                }
+            }.observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onSuccess = { response ->
+                    Log.e("AmusePushNotification", "onSuccess = $response")
                     if (response.isSuccessful) {
-                        saveTokenWebbApp(response.body()!!)
-                        retrofitAmusePushNotificationApi.registerUserWithToken(
-                            response.body()!!,
-                            ID_TEL.toRequestBody(),
-                            NUM_APP.toRequestBody(),
-                            OS.toRequestBody(),
-                            userTokenNotification.toRequestBody(),
-                            idUser.toRequestBody()
-                        )
+                        saveIdTerminal(response.body()!!.id)
+                        emitter.onComplete()
                     } else {
-                        throw GetTagFromApiException()
+                        emitter.onError(SendTokenApiException(response.message()))
                     }
-                }.observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribeBy(
-                    onSuccess = { response ->
-                        Log.e("AmusePushNotification", "onSuccess = $response")
-                        if (response.isSuccessful) {
-                            saveIdTerminal(response.body()!!.id)
-                            emitter.onComplete()
-                        } else {
-                            emitter.onError(SendTokenApiException(response.message()))
-                        }
 
-                    },
-                    onError = {
-                        Log.e("AmusePushApi", "error send token = ${it.localizedMessage}")
-                        emitter.onError(it)
-                    }
-                )
-        }
+                },
+                onError = {
+                    Log.e("AmusePushApi", "error send token = ${it.localizedMessage}")
+                    emitter.onError(it)
+                }
+            )
+    }
 
     override fun subscribeUserTag(idTag: Int, tagName: String): Completable = Completable.create { emitter ->
         retrofitAmusePushNotificationApi.subscribeTag(
@@ -137,25 +136,37 @@ class AmusePushNotificationApiServiceImpl(private val context: Context) : AmuseP
     }
 
     private fun saveTokenWebbApp(tokenWebbApp: String) {
-        val prefs = context.getSharedPreferences(Constants.USER_PREFERENCES_KEY, Context.MODE_PRIVATE)
         prefs.edit().putString(Constants.TOKEN_WEB_APP_PREF_KEY, tokenWebbApp).apply()
-
     }
 
     private fun saveIdTerminal(id: Int) {
-        val prefs = context.getSharedPreferences(Constants.USER_PREFERENCES_KEY, Context.MODE_PRIVATE)
         prefs.edit().putInt(Constants.TERMINAL_ID_PREF_KEY, id).apply()
 
     }
 
+    private fun getAdvertisingId(): String {
+        return prefs.getString(Constants.ADVERTISING_ID_CLIENT_PREFERENCES_KEY, "")
+    }
+
     private fun getIdTerminal(): Int {
-        val prefs = context.getSharedPreferences(Constants.USER_PREFERENCES_KEY, Context.MODE_PRIVATE)
         return prefs.getInt(Constants.TERMINAL_ID_PREF_KEY, 0)
     }
 
     private fun getTokenWebApp(): String {
-        val prefs = context.getSharedPreferences(Constants.USER_PREFERENCES_KEY, Context.MODE_PRIVATE)
         return prefs.getString(Constants.TOKEN_WEB_APP_PREF_KEY, "")
+    }
+
+    private fun getFcmToken(): String {
+        return prefs.getString(Constants.FCM_TOKEN_PREFERENCES_KEY, "")
+    }
+
+    private fun getIdUser(): String {
+        val idUser = prefs.getString(Constants.USER_ID_PREFERENCES_KEY, "")
+        if (idUser.isEmpty()) {
+            throw Exception("you need Save id user in pref see function in AmusePushApp saveUserId()")
+        } else {
+            return idUser
+        }
     }
 
 }
