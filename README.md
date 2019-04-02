@@ -30,9 +30,31 @@ implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
 Now you can write this lines
 
 ```
-implementation 'com.github.appndigital:amuse-push:1.0.1'
+implementation 'com.github.appndigital:amuse-push:1.0.2'
 ```
+first you to need to extend your Application class to AmusePushApp class (OPTIONAL)
 
+```
+class MyApp : AmusePusApp() {
+...
+}
+```
+add in you manifest 
+
+```
+<application
+android:name="com.mypackage.MyApp"
+...
+</application>
+```
+or if you have not Custom Application class
+
+```
+<application
+android:name="com.appndigital.amusepush.AmusePushApp"
+...
+</application>
+```
 you need to create a Service extend AmusePushMessagingService like this
 
 ```
@@ -63,41 +85,59 @@ FirebaseApp.initializeApp(this)
 ## Exemple of use with RX in an Activity
 
 ```
- private fun notifyMe() {
-        val amusePushNotificationApiService: AmusePushNotificationApiService = AmusePushNotificationApiServiceImpl(this)
-        val amusePushNotificationService: AmusePushNotificationService = AmusePushNotificationServiceImpl()
-        var disposable  = GooglePlayHelper.verifyGooglePlayService(this)
-            .andThen(amusePushNotificationService.getToken())
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .flatMapCompletable { token ->
-                amusePushNotificationApiService.registerUserWithToken(token, "217")
-            }
+amusePushApp = application as AmusePushApp
+        val prefs = getSharedPreferences(Constants.USER_PREFERENCES_KEY, Context.MODE_PRIVATE)
+
+        //init amusePush at the begining better in splashscreen
+        progressBar.visibility = View.VISIBLE
+        amusePushApp.initAmusePush()
             .subscribeBy(
                 onComplete = {
-                    Log.e("Activity", "Connecté au push notif")
-                },
-                onError = { exception ->
-
-                    Log.e("Activity", "Error on token = ${exception.localizedMessage}")
-
-                    when (exception) {
-                        DeviceUnsupportedException() -> {
-                            Toast.makeText(
-                                this,
-                                "votre portable ne supporte pas Google service",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-
-                        GooglePlayServicesOutDatedException(), GooglePlayServicesNotInstalledException() -> {
-                            GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this)
-                        }
-                        else -> Toast.makeText(this, "error inconnue", Toast.LENGTH_SHORT).show()
-                    }
+                    //display if token and advertising is save
+                    val fcmToken = prefs.getString(Constants.FCM_TOKEN_PREFERENCES_KEY, "")
+                    val advertisingIdClient = prefs.getString(Constants.ADVERTISING_ID_CLIENT_PREFERENCES_KEY, "")
+                    textView4.text = "$advertisingIdClient\n $fcmToken"
+                    progressBar.visibility = View.INVISIBLE
                 }
-            )
-    }
+            ).addTo(compositeDisposable)
+
+        sendFcmToServer.setOnClickListener {
+            progressBar.visibility = View.VISIBLE
+            //important save an id user before save token to server
+            amusePushApp.saveUserId("12354")
+            amusePushApp.sendFCMTokenToServer()
+                .subscribeBy(
+                    onComplete = {
+                        progressBar.visibility = View.INVISIBLE
+                        textView.text = "Fcm envoyé au serveur"
+                    }
+                ).addTo(compositeDisposable)
+        }
+
+
+        subscribeTag.setOnClickListener {
+            progressBar.visibility = View.VISIBLE
+            //for subscribe
+            amusePushApp
+                .subscribeTag(5, "tagname")
+                .subscribeBy(
+                    onComplete = {
+                        progressBar.visibility = View.INVISIBLE
+                        textView2.text = "tag souscris"
+                    }
+                ).addTo(compositeDisposable)
+        }
+        unsubscribeTag.setOnClickListener {
+            progressBar.visibility = View.VISIBLE
+            //for unsubscribe by tag
+            amusePushApp.unsubscribeTag(5)
+                .subscribeBy(
+                    onComplete = {
+                        progressBar.visibility = View.INVISIBLE
+                        textView3.text = "tag non souscris"
+                    }
+                ).addTo(compositeDisposable)
+        }
 
 ```
 
