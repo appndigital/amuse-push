@@ -28,7 +28,7 @@ open class AmusePushApp : Application() {
 
     private val amusePushNotificationService: AmusePushNotificationService = AmusePushNotificationServiceImpl()
     private lateinit var amusePushNotificationApiService: AmusePushNotificationApiService
-    protected lateinit var activityTolaunchForNotification: Class<*>
+    lateinit var activityTolaunchForNotification: Class<*>
 
 
     override fun onCreate() {
