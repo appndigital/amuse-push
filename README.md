@@ -14,7 +14,7 @@ First step you need to follow
 
 AmusePush requires this dependencies in gradle :
 
-```
+```gradle
 implementation 'com.google.firebase:firebase-messaging:17.3.4'
 implementation 'com.google.firebase:firebase-core:16.0.7'
 implementation 'com.squareup.retrofit2:retrofit:2.4.0'
@@ -27,21 +27,21 @@ implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
 
 ### Installing
 
-Now you can write this lines
+Now you can write this line
 
-```
+```gradle
 implementation 'com.github.appndigital:amuse-push:1.0.2'
 ```
 first you to need to extend your Application class to AmusePushApp class (OPTIONAL)
 
-```
+```kotlin
 class MyApp : AmusePusApp() {
 ...
 }
 ```
 add in you manifest 
 
-```
+```xml
 <application
 android:name="com.mypackage.MyApp"
 ...
@@ -49,7 +49,7 @@ android:name="com.mypackage.MyApp"
 ```
 or if you have not Custom Application class
 
-```
+```xml
 <application
 android:name="com.appndigital.amusepush.AmusePushApp"
 ...
@@ -57,7 +57,7 @@ android:name="com.appndigital.amusepush.AmusePushApp"
 ```
 you need to create a Service extend AmusePushMessagingService like this
 
-```
+```kotlin
 class NotificationMessageService : AmusePushMessagingService() {
 
     override val activityTolaunch: Class<*> = HomeActivity::class.java
@@ -65,9 +65,9 @@ class NotificationMessageService : AmusePushMessagingService() {
 ```
 
 don't forget add this in your manifest :
-```
+```xml
 ...
- <service android:name=".vigisnap.NotificationMessageService">
+ <service android:name=".mypackage.NotificationMessageService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -75,16 +75,25 @@ don't forget add this in your manifest :
     </application>
 </manifest>
 ```
-
-in your App or Activity init Firebase :
+create a constants.xml file in your folder res/values copy and paste this with required value :
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- url of amusepush-->
+    <item name="dev_url" format="string" type="string">https://amusepush.appndesk.com/app/</item>
+    <item name="prod_url" format="string" type="string">https://amusepush.appndesk.com/app/</item>
+    <!-- tag of app -->
+    <item name="app_tag" format="string" type="string">e655f06d04682ee8f8a634347727a0d8ea21ca2db6ebd2c6003534e5081a0913</item>
+    <!-- num of app -->
+    <item name="num_app" format="integer" type="integer">29</item>
+    <!-- android = 1 & ios =  0 -->
+    <item name="os" format="integer" type="integer">1</item>
+</resources>
 ```
-FirebaseApp.initializeApp(this)
-```
-
 
 ## Exemple of use with RX in an Activity
 
-```
+```kotlin
 amusePushApp = application as AmusePushApp
         val prefs = getSharedPreferences(Constants.USER_PREFERENCES_KEY, Context.MODE_PRIVATE)
 
