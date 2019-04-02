@@ -30,7 +30,7 @@ implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
 Now you can write this line
 
 ```gradle
-implementation 'com.github.appndigital:amuse-push:1.0.2'
+implementation 'com.github.appndigital:amuse-push:1.0.3'
 ```
 first you to need to extend your Application class to AmusePushApp class (OPTIONAL)
 
