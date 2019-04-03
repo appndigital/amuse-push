@@ -10,7 +10,7 @@ import com.appndigital.amusepush.exceptions.DeviceUnsupportedException
 import com.appndigital.amusepush.exceptions.GooglePlayServicesNotInstalledException
 import com.appndigital.amusepush.exceptions.GooglePlayServicesOutDatedException
 import com.appndigital.amusepush.helper.GooglePlayHelper
-import com.appndigital.amusepush.helper.Utils
+import com.appndigital.amusepush.helper.AmusePushUtils
 import com.appndigital.pushnotification.registernotification.AmusePushNotificationService
 import com.appndigital.pushnotification.registernotification.AmusePushNotificationServiceImpl
 import com.google.android.gms.ads.identifier.AdvertisingIdClient
@@ -49,7 +49,7 @@ open class AmusePushApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Utils.saveDateLastOpening(this)
+        AmusePushUtils.saveDateLastOpening(this)
         FirebaseApp.initializeApp(this)
         amusePushNotificationApiService = AmusePushNotificationApiServiceImpl(this)
     }

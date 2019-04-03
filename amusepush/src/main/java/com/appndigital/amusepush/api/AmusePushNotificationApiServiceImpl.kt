@@ -7,7 +7,7 @@ import com.appndigital.amusepush.Constants
 import com.appndigital.amusepush.R
 import com.appndigital.amusepush.exceptions.GetTagFromApiException
 import com.appndigital.amusepush.exceptions.SendTokenApiException
-import com.appndigital.amusepush.helper.Utils
+import com.appndigital.amusepush.helper.AmusePushUtils
 import com.appndigital.amusepush.helper.VariantHelper
 import com.appndigital.amusepush.helper.toRequestBody
 import com.google.gson.GsonBuilder
@@ -42,8 +42,8 @@ class AmusePushNotificationApiServiceImpl(private val context: Context) : AmuseP
                         OS.toRequestBody(),
                         getFcmToken().toRequestBody(),
                         AmusePushApp.version.toRequestBody(),
-                        Utils.getInstallDate(context).toRequestBody(),
-                        Utils.getDateLastOpening(context).toRequestBody(),
+                        AmusePushUtils.getInstallDate(context).toRequestBody(),
+                        AmusePushUtils.getDateLastOpening(context).toRequestBody(),
                         getIdUser().toRequestBody()
                     )
                 } else {

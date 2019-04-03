@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class Utils {
+class AmusePushUtils {
 
     companion object {
         const val stringFormat = "yyyy-MM-dd HH:mm"
