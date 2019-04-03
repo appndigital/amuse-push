@@ -2,6 +2,7 @@ package com.appndigital.amusepush
 
 import android.app.Application
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
 import com.appndigital.amusepush.api.AmusePushNotificationApiService
 import com.appndigital.amusepush.api.AmusePushNotificationApiServiceImpl
@@ -9,6 +10,7 @@ import com.appndigital.amusepush.exceptions.DeviceUnsupportedException
 import com.appndigital.amusepush.exceptions.GooglePlayServicesNotInstalledException
 import com.appndigital.amusepush.exceptions.GooglePlayServicesOutDatedException
 import com.appndigital.amusepush.helper.GooglePlayHelper
+import com.appndigital.amusepush.helper.Utils
 import com.appndigital.pushnotification.registernotification.AmusePushNotificationService
 import com.appndigital.pushnotification.registernotification.AmusePushNotificationServiceImpl
 import com.google.android.gms.ads.identifier.AdvertisingIdClient
@@ -30,9 +32,24 @@ open class AmusePushApp : Application() {
     private lateinit var amusePushNotificationApiService: AmusePushNotificationApiService
     lateinit var activityTolaunchForNotification: Class<*>
 
+    companion object {
+        var version = "1.0"
+
+        @JvmStatic
+        fun defineVersion(context: Context) {
+            try {
+                val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+                version = pInfo.versionName
+            } catch (e: PackageManager.NameNotFoundException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
 
     override fun onCreate() {
         super.onCreate()
+        Utils.saveDateLastOpening(this)
         FirebaseApp.initializeApp(this)
         amusePushNotificationApiService = AmusePushNotificationApiServiceImpl(this)
     }

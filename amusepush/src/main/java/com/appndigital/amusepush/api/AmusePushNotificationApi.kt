@@ -19,6 +19,9 @@ interface AmusePushNotificationApi {
                               @Part("app") app: RequestBody,
                               @Part("os") os: RequestBody,
                               @Part("token") userTokenNotification: RequestBody,
+                              @Part("app_vers") app_vers: RequestBody,
+                              @Part("app_install") app_install: RequestBody,
+                              @Part("app_last_opening") app_last_opening: RequestBody,
                               @Part("id_user_client") idUser: RequestBody): Single<Response<ResponseSendTokenDto>>
 
 
