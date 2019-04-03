@@ -32,19 +32,6 @@ open class AmusePushApp : Application() {
     private lateinit var amusePushNotificationApiService: AmusePushNotificationApiService
     lateinit var activityTolaunchForNotification: Class<*>
 
-    companion object {
-        var version = "1.0"
-
-        @JvmStatic
-        fun defineVersion(context: Context) {
-            try {
-                val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-                version = pInfo.versionName
-            } catch (e: PackageManager.NameNotFoundException) {
-                e.printStackTrace()
-            }
-        }
-    }
 
 
     override fun onCreate() {
