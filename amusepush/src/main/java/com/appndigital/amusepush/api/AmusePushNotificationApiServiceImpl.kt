@@ -41,7 +41,7 @@ class AmusePushNotificationApiServiceImpl(private val context: Context) : AmuseP
                         NUM_APP.toRequestBody(),
                         OS.toRequestBody(),
                         getFcmToken().toRequestBody(),
-                        "1.0".toRequestBody(),
+                        AmusePushApp.version.toRequestBody(),
                         AmusePushUtils.getInstallDate(context).toRequestBody(),
                         AmusePushUtils.getDateLastOpening(context).toRequestBody(),
                         getIdUser().toRequestBody()
